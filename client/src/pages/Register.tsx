@@ -2,16 +2,23 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
+import config from "../config";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(false);
+  const [token, setToken] = useState("");
   const navigate = useNavigate();
 
   const signup = (e) => {
     e.preventDefault();
+    if (!token) {
+      alert("Fill recaptcha");
+      return;
+    }
     axios
       .post("http://localhost:5000/auth/register", {
         name,
@@ -29,6 +36,10 @@ const Register = () => {
         console.log(err);
       });
   };
+
+  function onChange(value) {
+    console.log("Captcha value:", value);
+  }
 
   return (
     <div className="mt-5 text-center">
@@ -53,6 +64,15 @@ const Register = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+        <br />
+        <br />
+        <div className="text-center">
+          <ReCAPTCHA
+            sitekey={config.RECAPTCHA_SITE_KEY}
+            onChange={(token) => setToken(token)}
+            onExpired={(e) => setToken("")}
+          />
+        </div>
         <br />
         <br />
         <button type="submit">Register</button>

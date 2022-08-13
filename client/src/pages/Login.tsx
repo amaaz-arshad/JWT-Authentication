@@ -1,16 +1,24 @@
 // @ts-nocheck
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
+import config from "../config";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(false);
+  const [token, setToken] = useState("");
   const navigate = useNavigate();
+  const captchaRef = useRef(null);
 
   const signin = (e) => {
     e.preventDefault();
+    if (!token) {
+      alert("Fill recaptcha");
+      return;
+    }
     axios
       .post("http://localhost:5000/auth/login", {
         email,
@@ -19,6 +27,8 @@ const Login = () => {
       .then((res) => {
         console.log(res);
         if (res.status === 200) {
+          captchaRef.current.reset();
+          setToken("");
           localStorage.setItem("jwtToken", JSON.stringify(res.data));
           navigate("/");
         }
@@ -54,6 +64,19 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+        <br />
+        <br />
+        <div className="text-center">
+          <ReCAPTCHA
+            ref={captchaRef}
+            sitekey={config.RECAPTCHA_SITE_KEY}
+            onChange={(token) => {
+              console.log(token);
+              setToken(token);
+            }}
+            onExpired={(e) => setToken("")}
+          />
+        </div>
         <br />
         <br />
         <button type="submit">Login</button>
