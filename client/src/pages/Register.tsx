@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -12,6 +12,7 @@ const Register = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [token, setToken] = useState("");
   const navigate = useNavigate();
+  const captchaRef = useRef(null);
 
   const signup = (e) => {
     e.preventDefault();
@@ -28,6 +29,8 @@ const Register = () => {
       .then((res) => {
         console.log(res);
         if (res.status === 201) {
+          captchaRef.current.reset();
+          setToken("");
           localStorage.setItem("jwtToken", JSON.stringify(res.data));
           navigate("/");
         }
@@ -66,14 +69,17 @@ const Register = () => {
         />
         <br />
         <br />
-        <div className="text-center">
+        <div style={{ width: "300px", margin: "auto" }}>
           <ReCAPTCHA
+            ref={captchaRef}
             sitekey={config.RECAPTCHA_SITE_KEY}
-            onChange={(token) => setToken(token)}
+            onChange={(token) => {
+              console.log(token);
+              setToken(token);
+            }}
             onExpired={(e) => setToken("")}
           />
         </div>
-        <br />
         <br />
         <button type="submit">Register</button>
       </form>

@@ -19,8 +19,10 @@ const Login = () => {
       alert("Fill recaptcha");
       return;
     }
+
     axios
       .post("http://localhost:5000/auth/login", {
+        // token,
         email,
         password,
       })
@@ -66,7 +68,7 @@ const Login = () => {
         />
         <br />
         <br />
-        <div className="text-center">
+        <div style={{ width: "300px", margin: "auto" }}>
           <ReCAPTCHA
             ref={captchaRef}
             sitekey={config.RECAPTCHA_SITE_KEY}
@@ -77,7 +79,6 @@ const Login = () => {
             onExpired={(e) => setToken("")}
           />
         </div>
-        <br />
         <br />
         <button type="submit">Login</button>
       </form>

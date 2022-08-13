@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("./authController");
+const config = require("../config");
+const axios = require("axios");
 
 router.post("/register", (req, res) => {
   try {
@@ -29,9 +31,22 @@ router.post("/register", (req, res) => {
   }
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // if (!token) {
+    //   return res.status(400).send("Recaptcha token is missing !!");
+    // }
+    // const googleVerifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${config.RECAPTCHA_SECRET_KEY}&response=${token}`;
+    // const response = await axios.post(googleVerifyURL);
+    // const { success } = response.data;
+    // if (success) {
+
+    // } else {
+    //   return res.status(400).send({ error: "Invalid recaptcha. Try again." });
+    // }
+
     if (!(email && password)) {
       return res.status(400).send("Required inputs are missing !!");
     }
